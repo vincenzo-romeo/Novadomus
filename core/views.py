@@ -962,17 +962,15 @@ class PietanzaCreateView(CreateView):
     template_name = "core/pietanza_form.html"
 
     def get_success_url(self):
-        return reverse("menu_diario")  # pagina già presente
-    # Se preferisci restare sul form, usa: return reverse("pietanza_nuova")
+        return reverse("menu_diario")
 
     def form_valid(self, form):
-        resp = super().form_valid(form)  # salva e prepara redirect di default
+        resp = super().form_valid(form)   # salva e prepara redirect
         if "save_add" in self.request.POST:
-            from django.contrib import messages
             messages.success(self.request, "Pietanza salvata. Inseriscine un'altra.")
-            return redirect("pietanza_nuova")  # <<< HttpResponseRedirect corretto
+            return redirect("pietanza_nuova")
         messages.success(self.request, "Pietanza salvata.")
-        return resp
+        return resp        
         
 def build_menu_weeks(periodo, pasto_filter=None):
     # intervallo date (tutto il periodo)
