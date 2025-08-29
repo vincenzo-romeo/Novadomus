@@ -1,0 +1,22 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  /* un po' di stile per i bottoni nell'header admin */
+  #custom-admin-links{ display:inline-flex; gap:8px; margin-left:12px; }
+  #custom-admin-links .button{ padding:6px 10px; border-radius:8px; }
+</style>
+{% endblock %}
+
+{% block branding %}
+  <!-- titolo standard admin -->
+  <h1 id="site-name"><a href="{% url 'admin:index' %}">Amministrazione NOVA DOMUS</a></h1>
+
+  <!-- tuoi link rapidi -->
+  <span id="custom-admin-links">
+    <a href="{% url 'dashboard' %}" class="button default">Dashboard RSA</a>
+	<a href="{% url 'turni_diario' %}" class="button default">Turni</a>
+	<a href="{% url 'menu_diario' %}" class="button default">Menu</a>
+  </span>
+{% endblock %}

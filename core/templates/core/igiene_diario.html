@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'core/css/igiene.css' %}">
+{% block title %}Diario Igiene Ospiti — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:1200px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Diario Igiene Ospiti</h2>
+
+  <form method="get" class="stack" style="flex-direction:row;gap:12px;margin-bottom:12px;">
+    <div>
+      <label><strong>Paziente</strong></label>
+	<select name="paziente" class="select">
+	  <option value="">Tutti</option>
+	  {% for p in pazienti %}
+		<option value="{{ p.id }}" {% if selected_id == p.id|stringformat:"s" %}selected{% endif %}>
+		  {{ p.cognome }} {{ p.nome }}
+		</option>
+	  {% endfor %}
+	</select>
+    </div>
+    <div>
+      <label><strong>Settimana (data inizio)</strong></label>
+      <input type="date" name="settimana" value="{{ settimana|date:'Y-m-d' }}" class="input">
+    </div>
+    <div style="align-self:flex-end;">
+      <button type="submit" class="btn btn-primary">Filtra</button>
+    </div>
+  </form>
+
+	<table class="table" style="width:100%;border-collapse:collapse;border:1px solid #555;">
+	  <thead>
+		<tr>
+		  <th style="border:1px solid #555;padding:3px;text-align:left;">Paziente</th>
+		  {% for g in giorni %}
+			<th style="border:1px solid #555;padding:3px;text-align:center;">{{ g|date:"l" }}</th>
+		  {% endfor %}
+		</tr>
+	  </thead>
+	  <tbody>
+		{% for riga in tabella %}
+		  <tr>
+			<td style="border:1px solid #555;padding:6px;"><strong>{{ riga.paziente.cognome }} {{ riga.paziente.nome }}</strong></td>
+			{% for ev in riga.giorni %}
+			  <td style="border:1px solid #555;padding:1px;font-size:0.8em;text-align:center;">
+				{{ ev }}
+			  </td>
+			{% endfor %}
+		  </tr>
+		{% endfor %}
+	  </tbody>
+	</table>
+
+</div>
+{% endblock %}

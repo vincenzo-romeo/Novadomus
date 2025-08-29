@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Nuova somministrazione — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:980px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Inserisci Somministrazione</h2>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="badge danger" style="display:block;margin-bottom:12px;">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;">
+      <!-- Paziente -->
+      <div>
+        <label><strong>{{ form.paziente.label }}</strong></label>
+        {{ form.paziente }} {% for e in form.paziente.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+        <small class="text-muted">Cambia il paziente per filtrare le righe.</small>
+      </div>
+
+      <!-- Riga prescrizione -->
+      <div>
+        <label><strong>{{ form.riga.label }}</strong></label>
+        {{ form.riga }} {% for e in form.riga.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+
+      <!-- Forma (auto-compilata dalla riga) -->
+      <div>
+        <label><strong>{{ form.forma_vis.label }}</strong></label>
+        {{ form.forma_vis }}
+      </div>
+
+      <!-- Programmata il -->
+      <div>
+        <label><strong>{{ form.programmata_il.label }}</strong></label>
+        {{ form.programmata_il }} {% for e in form.programmata_il.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+
+      <!-- Data/Ora effettiva -->
+      <div>
+        <label><strong>{{ form.data_ora.label }}</strong></label>
+        {{ form.data_ora }} {% for e in form.data_ora.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+
+      <!-- Dose + UDM (con etichetta UDM visibile) -->
+      <div style="grid-column:1/-1;">
+        <div style="display:grid;grid-template-columns:minmax(180px,1fr) 140px;gap:8px;align-items:start;">
+          <div>
+            <label><strong>{{ form.dose_erogata.label }}</strong></label>
+            {{ form.dose_erogata }}
+            {% for e in form.dose_erogata.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+          </div>
+          <div>
+            <label><strong>{{ form.dose_udm_vis.label }}</strong></label>
+            {{ form.dose_udm_vis }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Stato -->
+      <div style="grid-column:1/-1;">
+        <label><strong>{{ form.stato.label }}</strong></label>
+        {{ form.stato }} {% for e in form.stato.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+
+      <!-- Note -->
+      <div style="grid-column:1/-1;">
+        <label><strong>{{ form.note.label }}</strong></label>
+        {{ form.note }} {% for e in form.note.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+      <a class="btn" href="{% url 'dashboard' %}">Annulla</a>
+      <button type="submit" class="btn btn-primary">Salva</button>
+    </div>
+  </form>
+</div>
+
+<!-- Mappa riga → {dose, udm, forma} per auto-compilazione -->
+<script>
+  window.RIGHE_META = {
+    {% for r in form.fields.riga.queryset %}
+      "{{ r.id }}": {
+        "dose": "{{ r.dose_val }}",
+        "udm": "{{ r.dose_udm|escapejs }}",
+        "forma": "{{ r.farmaco.forma|default_if_none:'' }}"
+      },
+    {% endfor %}
+  };
+</script>
+
+<script src="{% static 'core/js/somministrazioni.js' %}"></script>
+{% endblock %}

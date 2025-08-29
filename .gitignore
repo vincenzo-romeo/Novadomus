@@ -1,0 +1,28 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# --- Virtualenv ---
+venv/
+ENV/
+.venv/
+
+# --- Django / DB locali ---
+db.sqlite3
+*.sqlite3
+
+# --- Config locali ---
+.env
+
+# --- Static & Media generate ---
+/staticfiles/
+/media/
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo

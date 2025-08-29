@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% block title %}Visualizza anagrafica — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:1100px;margin:auto;">
+  <h2 style="margin-bottom:14px;">👤 Scheda paziente</h2>
+
+  <!-- Selettore paziente -->
+  <form method="get" class="form-inline" style="display:flex;gap:8px;align-items:center;margin-bottom:16px;">
+    <label for="p" class="sr-only">Paziente</label>
+    <select name="p" id="p" class="select" style="min-width:320px;">
+      <option value="">— Seleziona paziente —</option>
+      {% for p in pazienti %}
+        <option value="{{ p.id }}" {% if paziente and p.id == paziente.id %}selected{% endif %}>
+          {{ p.cognome }} {{ p.nome }} — CF: {{ p.codice_fiscale }}
+        </option>
+      {% endfor %}
+    </select>
+    <button class="btn btn-primary btn-sm">Apri scheda</button>
+  </form>
+
+  {% if paziente %}
+  <!-- Sezione: Anagrafica completa -->
+  <section style="margin-top:10px;">
+    <h3>📄 Anagrafica</h3>
+    <div class="grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
+      <div class="field"><strong>Nome</strong><br>{{ paziente.nome }}</div>
+      <div class="field"><strong>Cognome</strong><br>{{ paziente.cognome }}</div>
+      <div class="field"><strong>Sesso</strong><br>{{ paziente.get_sesso_display|default:paziente.sesso }}</div>
+      <div class="field"><strong>Data di nascita</strong><br>{{ paziente.data_nascita|date:"d/m/Y" }} ({{ paziente.eta }} anni)</div>
+      <div class="field"><strong>Codice Fiscale</strong><br>{{ paziente.codice_fiscale }}</div>
+      <div class="field"><strong>Tessera Sanitaria</strong><br>{{ paziente.tessera_sanitaria|default:"—" }}</div>
+
+      <div class="field"><strong>Comune di nascita</strong><br>{{ paziente.comune_nascita|default:"—" }}</div>
+      <div class="field"><strong>Provincia di nascita</strong><br>{{ paziente.provincia_nascita|default:"—" }}</div>
+
+      <div class="field"><strong>Comune di residenza</strong><br>{{ paziente.comune_residenza|default:"—" }}</div>
+      <div class="field"><strong>Provincia di residenza</strong><br>{{ paziente.provincia_residenza|default:"—" }}</div>
+      <div class="field" style="grid-column:1/-1;">
+        <strong>Indirizzo</strong><br>
+        {% with via=paziente.indirizzo_via civ=paziente.indirizzo_civico cap=paziente.indirizzo_cap %}
+          {% if via or civ or cap %}
+            {{ via }} {{ civ }}{% if cap %}, {{ cap }}{% endif %}
+          {% else %}—{% endif %}
+        {% endwith %}
+      </div>
+
+      <div class="field"><strong>Telefono</strong><br>{{ paziente.telefono|default:"—" }}</div>
+      <div class="field"><strong>Email</strong><br>{{ paziente.email|default:"—" }}</div>
+    </div>
+  </section>
+
+	<section style="margin-top:18px;">
+	  <h3>🏥 Dati del ricovero</h3>
+	  {% if episodi %}
+		<table class="table">
+		  <thead>
+			<tr>
+			  <th>Stato</th><th>Dal</th><th>Al</th><th>Motivo</th><th>Medico</th><th>Letto</th><th>Provenienza</th>
+			</tr>
+		  </thead>
+		  <tbody>
+			{% for e in episodi %}
+			<tr>
+			  <td>{{ e.get_stato_display }}</td>
+			  <td>{{ e.data_inizio|date:"d/m/Y" }}</td>
+			  <td>{{ e.data_fine|date:"d/m/Y"|default:"—" }}</td>
+			  <td>{{ e.motivo|default:"—" }}</td>
+			  <td>{{ e.medico.get_full_name|default:"—" }}</td>
+			  <td>{{ e.letto|default:"—" }}</td>
+			  <td>{{ e.get_provenienza_display }}</td>
+			</tr>
+			{% endfor %}
+		  </tbody>
+		</table>
+	  {% else %}
+		<p>Nessun episodio registrato.</p>
+	  {% endif %}
+	</section>
+
+  <!-- Sezione: Contatti di emergenza -->
+  <section style="margin-top:18px;">
+    <h3>📞 Contatti di emergenza</h3>
+    {% if contatti %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nome</th><th>Relazione</th><th>Primario</th><th>Recapiti</th><th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in contatti %}
+          <tr>
+            <td>{{ c.cognome }} {{ c.nome }}</td>
+            <td>{{ c.get_relazione_display }}</td>
+            <td>{% if c.is_primario %}✔{% else %}—{% endif %}</td>
+            <td>
+              {% if c.recapiti.all %}
+                <ul style="margin:0;padding-left:16px;">
+                  {% for r in c.recapiti.all %}
+                    <li>{% if r.preferito %}<strong>★</strong> {% endif %}{{ r.get_tipo_display }}: {{ r.valore }}{% if r.note %} — <em>{{ r.note }}</em>{% endif %}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}—{% endif %}
+            </td>
+            <td>{{ c.note|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Nessun contatto registrato.</p>
+    {% endif %}
+  </section>
+  
+  <!-- Sezione: Documenti -->
+<section style="margin-top:18px;">
+  <h3>📎 Documenti</h3>
+  {% if documenti %}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Tipo</th>
+          <th>File</th>
+          <th>Tag</th>
+          <th>Episodio</th>
+          <th>Caricato da</th>
+          <th>Data</th>
+          <th>Azioni</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in documenti %}
+        <tr>
+          <td>{{ d.get_tipo_display }}</td>
+          <td style="max-width:360px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+            {{ d.file.name }}
+          </td>
+          <td>{{ d.tag|default:"—" }}</td>
+          <td>
+            {% if d.episodio %}
+              {{ d.episodio.get_stato_display }} (dal {{ d.episodio.data_inizio|date:"d/m/Y" }})
+            {% else %}—{% endif %}
+          </td>
+          <td>
+            {% if d.caricato_da %}
+              {{ d.caricato_da.get_full_name|default:d.caricato_da.username }}
+            {% else %}—{% endif %}
+          </td>
+          <td>{{ d.creato_il|date:"d/m/Y H:i"|default:"—" }}</td>
+          <td>
+            {% if d.file %}
+              <a href="{{ d.file.url }}" target="_blank" class="btn btn-sm">Apri</a>
+              <a href="{{ d.file.url }}" download class="btn btn-sm">Scarica</a>
+            {% else %}—{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>Nessun documento caricato.</p>
+  {% endif %}
+</section>
+
+
+  <!-- Sezione: Allergie -->
+  <section style="margin-top:18px;">
+    <h3>⚠️ Allergie</h3>
+    {% if allergie %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Categoria</th><th>Target</th><th>Gravità</th><th>Attiva</th><th>Data</th><th>Reazione/Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for a in allergie %}
+          <tr>
+            <td>{{ a.get_categoria_display }}</td>
+            <td>{% if a.categoria == "FARMACO" and a.farmaco %}{{ a.farmaco.nome }}{% else %}{{ a.sostanza_libera }}{% endif %}</td>
+            <td>{{ a.get_gravita_display }}</td>
+            <td>{% if a.attiva %}✔{% else %}—{% endif %}</td>
+            <td>{{ a.data_rilevazione|date:"d/m/Y"|default:"—" }}</td>
+            <td>{% if a.reazione %}{{ a.reazione }}{% elif a.note %}{{ a.note }}{% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>Nessuna allergia registrata.</p>
+    {% endif %}
+  </section>
+
+<!-- Sezione: Prescrizioni -->
+<section style="margin-top:18px;">
+  <h3>📝 Prescrizioni</h3>
+  {% if prescrizioni %}
+    {% for p in prescrizioni %}
+      <div class="card" style="margin-bottom:12px;">
+        <strong>Prescrizione dal {{ p.data_inizio|date:"d/m/Y" }}{% if p.data_fine %} al {{ p.data_fine|date:"d/m/Y" }}{% endif %}</strong>
+        Medico: {{ p.medico.get_full_name|default:"Medico non indicato" }}  
+        {% if not p.attiva %}<span style="color:red;">(non attiva)</span>{% endif %}
+        <p>{{ p.note|default:"" }}</p>
+
+        {% if p.righe.all %}
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Farmaco</th><th>Dose</th><th>Via</th><th>PRN</th><th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in p.righe.all %}
+              <tr>
+                <td>{{ r.farmaco.nome }}</td>
+                <td>{{ r.dose_val }} {{ r.dose_udm }}</td>
+                <td>{{ r.get_via_display }}</td>
+                <td>{% if r.prn %}✔{% else %}—{% endif %}</td>
+                <td>{{ r.note|default:"—" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>Nessuna riga di prescrizione.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>Nessuna prescrizione registrata.</p>
+  {% endif %}
+</section>
+
+  {% endif %}
+</div>
+{% endblock %}

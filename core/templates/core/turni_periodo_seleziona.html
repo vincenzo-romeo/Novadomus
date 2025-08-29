@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Seleziona periodo turni — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:900px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Turni — seleziona periodo</h2>
+
+  <form method="post" style="margin-bottom:12px;">
+    {% csrf_token %}
+    <label for="periodo_id">Periodo</label>
+    <select id="periodo_id" name="periodo_id" class="select" required>
+      {% for p in periodi %}
+        <option value="{{ p.pk }}" {% if p.pk == selected %}selected{% endif %}>
+          {{ p.nome|default:"(senza nome)" }} — {{ p.data_inizio }} → {{ p.data_fine }} ({{ p.get_stato_display }})
+        </option>
+      {% endfor %}
+    </select>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+      <a class="btn btn-ghost btn-sm" href="{% url 'turni_periodo_nuovo' %}">Crea nuovo periodo</a>
+      <button class="btn btn-primary btn-sm" type="submit">Gestisci</button>
+    </div>
+  </form>
+
+  <h3 style="margin-top:8px;">Tutti i periodi</h3>
+  {% if periodi %}
+  <div class="table-responsive">
+    <table class="table">
+      <thead><tr><th>Nome</th><th>Intervallo</th><th>Stato</th><th></th></tr></thead>
+      <tbody>
+        {% for p in periodi %}
+        <tr>
+          <td>{{ p.nome|default:"(senza nome)" }}</td>
+          <td>{{ p.data_inizio }} → {{ p.data_fine }}</td>
+          <td>{{ p.get_stato_display }}</td>
+          <td style="text-align:right;">
+            <a class="btn btn-primary btn-sm" href="{% url 'turni_periodo_gestisci' p.pk %}">Gestisci</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <p>Nessun periodo presente. <a href="{% url 'turni_periodo_nuovo' %}">Creane uno</a>.</p>
+  {% endif %}
+</div>
+{% endblock %}

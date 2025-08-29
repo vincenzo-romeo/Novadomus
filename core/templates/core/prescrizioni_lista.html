@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Prescrizioni — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:1200px;margin:auto;">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+    <h2 style="margin:0;">Prescrizioni farmacologiche</h2>
+    <form id="filter-form" method="get" style="display:flex;gap:8px;align-items:center;">
+      <label for="paziente"><strong>Paziente</strong></label>
+      <select id="paziente" name="paziente" class="select">
+        <option value="">Tutti</option>
+        {% for p in pazienti %}
+          <option value="{{ p.id }}" {% if selected_id == p.id|stringformat:"s" %}selected{% endif %}>{{ p.cognome }} {{ p.nome }}</option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
+
+  {% if data|length == 0 %}
+    <p>Nessuna prescrizione trovata.</p>
+  {% endif %}
+
+  <div class="stack" style="display:flex;flex-direction:column;gap:14px;">
+    {% for blocco in data %}
+      <div class="card" style="padding:12px;">
+        <h3 style="margin:0 0 8px;">{{ blocco.paziente.cognome }} {{ blocco.paziente.nome }}</h3>
+
+        {% if blocco.entries %}
+          {% for e in blocco.entries %}
+            <div class="card" style="padding:10px;margin:8px 0;">
+              <div style="display:flex;flex-wrap:wrap;gap:16px;">
+                <div><strong>Medico:</strong> {{ e.pr.medico|default:"—" }}</div>
+                <div><strong>Dal:</strong> {{ e.pr.data_inizio }}</div>
+                <div><strong>Al:</strong> {{ e.pr.data_fine|default:"—" }}</div>
+                <div><strong>Stato:</strong> {% if e.pr.attiva %}Attiva{% else %}Chiusa{% endif %}</div>
+              </div>
+              {% if e.pr.note %}<div style="margin-top:6px;"><em>{{ e.pr.note }}</em></div>{% endif %}
+
+              <table class="table" style="width:100%;margin-top:8px;">
+                <thead>
+                  <tr><th>Farmaco</th><th>Dose</th><th>Via</th><th>PRN</th><th>Orari</th><th>Note</th></tr>
+                </thead>
+                <tbody>
+                  {% for pack in e.righe %}
+                    <tr>
+                      <td>{{ pack.r.farmaco }}</td>
+                      <td>{{ pack.r.dose_val }} {{ pack.r.dose_udm }}</td>
+                      <td>{{ pack.r.get_via_display }}</td>
+                      <td>{% if pack.r.prn %}Sì{% else %}No{% endif %}</td>
+						<td style="white-space:pre-line;">
+						  {% if pack.orari_fmt %}
+							<ul style="margin:0;padding-left:16px;">
+							  {% for orario in pack.orari_fmt %}
+								{{ orario }}<br>
+							  {% endfor %}
+							</ul>
+						  {% else %}
+							—
+						  {% endif %}
+						</td>
+                      <td>{{ pack.r.note }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p style="opacity:.7;">Nessuna prescrizione per questo paziente.</p>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script src="{% static 'core/js/prescrizioni_lista.js' %}"></script>
+{% endblock %}

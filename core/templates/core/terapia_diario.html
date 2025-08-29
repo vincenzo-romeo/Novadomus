@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Diario Somministrazioni — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:1200px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Diario Somministrazioni</h2>
+
+  <form method="get" class="stack" style="flex-direction:row;gap:12px;margin-bottom:12px;">
+    <div>
+      <label><strong>Paziente</strong></label>
+      <select name="paziente" class="select">
+        <option value="">Tutti</option>
+        {% for p in pazienti %}
+          <option value="{{ p.id }}" {% if selected_id == p.id|stringformat:"s" %}selected{% endif %}>
+            {{ p.cognome }} {{ p.nome }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label><strong>Settimana (data inizio)</strong></label>
+      <input type="date" name="settimana" value="{{ settimana|date:'Y-m-d' }}" class="input">
+    </div>
+    <div style="align-self:flex-end;">
+      <button type="submit" class="btn btn-primary">Filtra</button>
+    </div>
+  </form>
+
+  <table class="table" style="width:100%;border-collapse:collapse;border:1px solid #555;">
+    <thead>
+      <tr>
+        <th style="border:1px solid #555;padding:3px;text-align:left;">Paziente</th>
+        {% for g in giorni %}
+          <th style="border:1px solid #555;padding:3px;text-align:center;">
+            {{ g|date:"l" }}
+          </th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for riga in tabella %}
+        <tr>
+          <td style="border:1px solid #555;padding:2px;">
+            <strong>{{ riga.paziente.cognome }} {{ riga.paziente.nome }}</strong>
+          </td>
+          {% for voci in riga.giorni %}
+            <td style="border:1px solid #555;padding:1px;font-size:0.6em;text-align:center;">
+              {% if voci %}
+                {% for v in voci %}
+                  {{ v }}{% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

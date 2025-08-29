@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Gestisci Turni — RSA{% endblock %}
+{% block content %}
+<div class="card" style="max-width:980px;margin:auto;">
+  <h2 style="margin-bottom:4px;">Gestisci Turni</h2>
+  <p style="margin-top:0;opacity:.9;">
+    <strong>{{ periodo.nome|default:"Turni" }}</strong> —
+    {{ periodo.data_inizio }} → {{ periodo.data_fine }} ({{ periodo.get_stato_display }})
+  </p>
+
+  <h3 style="margin-top:16px;">Aggiungi turno</h3>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    <div class="grid" style="display:grid;grid-template-columns:200px 1fr 1fr;gap:8px;">
+      <div>{{ form.data.label_tag }} {{ form.data }}</div>
+      <div>{{ form.turno.label_tag }} {{ form.turno }}</div>
+      <div>{{ form.dipendente.label_tag }} {{ form.dipendente }}</div>
+    </div>
+    <div style="margin-top:8px;">{{ form.note.label_tag }} {{ form.note }}</div>
+    {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+      <button class="btn btn-secondary" name="save_add" value="1">Salva e inserisci nuovo</button>
+      <button class="btn btn-primary" name="save" value="1">Salva</button>
+    </div>
+  </form>
+  <hr style="margin:18px 0;opacity:.3;">
+
+	<h3 style="margin-top:8px;">Rotazione automatica</h3>
+	<form method="post" style="margin-top:8px;">
+	  {% csrf_token %}
+	  <input type="hidden" name="auto_fill" value="1">
+
+	  <div class="grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+		<div>
+		  <label>Data iniziale</label>
+		  <input type="date" name="start_date" class="input" value="{{ periodo.data_inizio }}">
+		  <small class="text-muted">Giorno da cui parte la rotazione</small>
+		</div>
+
+		{% for t in turni %}
+		<div>
+		  <label>{{ t.nome }} — giorno iniziale</label>
+		  <select name="op{{ forloop.counter }}" class="select" required>
+			<option value="" selected disabled>Seleziona…</option>
+			{% for d in dipendenti %}
+			  <option value="{{ d.id }}">{{ d.cognome }} {{ d.nome }} ({{ d.get_ruolo_display }})</option>
+			{% endfor %}
+		  </select>
+		</div>
+		{% endfor %}
+	  </div>
+
+	  <label style="display:inline-flex;gap:6px;align-items:center;margin-top:10px;">
+		<input type="checkbox" name="overwrite"> Sovrascrivi eventuali assegnazioni esistenti
+	  </label>
+
+	  <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+		<button class="btn btn-primary btn-sm" type="submit">Compila il periodo</button>
+	  </div>
+	</form>
+
+
+  <h3 style="margin-top:24px;">Turni inseriti</h3>
+  {% if assegnazioni %}
+    <div class="table-responsive">
+      <table class="table">
+        <thead><tr>
+          <th>Data</th><th>Turno</th><th>Dipendente</th><th>Note</th>
+        </tr></thead>
+        <tbody>
+          {% for a in assegnazioni %}
+          <tr>
+            <td>{{ a.data }}</td>
+            <td>{{ a.turno.nome|default:a.turno.codice }}</td>
+            <td>{{ a.dipendente.cognome }} {{ a.dipendente.nome }}</td>
+            <td>{{ a.note }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>Nessun turno inserito per questo periodo.</p>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends "base.html" %} {% block title %}Dashboard — RSA{% endblock %} {% block content %}
+<div class="card" style="margin-bottom:16px">
+    <h2>Benvenuto, {{ user.get_full_name|default:user.username }}</h2>
+    <p class="text-muted">Seleziona un’area per iniziare</p>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;">
+	<div class="card" style="text-decoration:none; padding:16px;">
+		<h2>👤 Pazienti</h2>
+		<p style="text-align:center;">
+			
+			<a href="{% url 'paziente_nuovo' %}">Nuovo paziente</a><br>
+			<a href="{% url 'episodio_accetta' %}">Accettazione</a><br>
+			<a href="{% url 'paziente_anagrafica' %}">Scheda paziente</a><br>
+			<a href="#">Dimissioni</a>
+		</p>
+	</div>
+
+	<div class="card" style="text-decoration:none; padding:16px;">
+		<h2>💊 Terapie</h2>
+		<p style="text-align:center;">
+			<a href="{% url 'prescrizione_nuova' %}">Inserisci piano terapeutico</a><br>
+			<a href="{% url 'somministrazione_nuova' %}">Somministrazione</a><br>
+			<a href="{% url 'terapia_diario' %}">Diario settimanale</a>
+		</p>
+	</div>
+
+	<div class="card" style="text-decoration:none; padding:16px;">
+		<h2>🩺 Parametri vitali</h2>
+		<p style="text-align:center;">
+			<a href="{% url 'parametro_nuovo' %}">Rileva parametri</a><br>
+			<a href="{% url 'parametri_diario' %}">Diario giornaliero</a>
+		</p>
+	</div>
+
+	<div class="card" style="text-decoration:none; padding:16px;">
+		<h2>🧼 Igiene</h2>
+		<p style="text-align:center;">
+			<a href="{% url 'igiene_nuovo' %}">Inserisci dati</a><br>
+			<a href="{% url 'igiene_diario' %}">Diario settimanale</a>
+		</p>
+	</div>
+	
+	<div class="card" style="text-decoration:none; padding:16px;">
+    <h2>🍽️ Alimentazione</h2>
+    <p style="text-align:center;">
+		<a href="{% url 'menu_periodo_nuovo' %}">Inserisci periodo</a><br>
+		<a href="{% url 'pietanza_nuova' %}">Inserisci nuova pietanza</a><br>
+        <a href="{% url 'menu_diario' %}">Menu periodo</a>
+    </p>
+	</div>
+
+	<div class="card" style="text-decoration:none; padding:16px;">
+		<h2>👨‍⚕️ Turni</h2>
+		<p style="text-align:center;">
+			<a href="{% url 'turni_periodo_nuovo' %}">Inserisci periodo</a><br>
+			<a href="{% url 'turni_periodo_seleziona' %}">Gestisci periodo</a><br>
+			<a href="{% url 'turni_diario' %}">Diario turni</a>
+		</p>
+	</div>
+	
+	<div class="card" style="text-decoration:none; padding:16px;">
+	  <h2>👥 Dipendenti</h2>
+	  <p style="text-align:center;">
+		<a href="{% url 'dipendente_nuovo' %}">Nuovo dipendente</a><br>
+		<a href="{% url 'admin:core_dipendente_changelist' %}">Gestisci dipendenti</a>
+	  </p>
+	</div>
+	
+	<div class="card" style="text-decoration:none; padding:16px;">
+	  <h2>⚙️ Backend</h2>
+	  <p style="text-align:center;">
+		<a href="{% url 'admin:core_paziente_changelist' %}">Pazienti</a><br>
+		<a href="{% url 'admin:core_contattoemergenza_changelist' %}">Contatti emergenza</a><br>
+		<a href="{% url 'admin:core_allergia_changelist' %}">Allergie</a><br>
+	  </p>
+	</div>
+	<div class="card" style="text-decoration:none; padding:16px;">
+	  <h2>🖨️ Report</h2>
+	  <p style="text-align:center;">
+		<a href="{% url 'report_menu_periodo_select' %}">Menu per periodo (stampa)</a>
+	  </p>
+	</div>
+{% endblock %}
+

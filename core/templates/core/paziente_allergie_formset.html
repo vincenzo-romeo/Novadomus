@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Allergie — {{ paziente.cognome }} {{ paziente.nome }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:980px;margin:auto;">
+  <h2 style="margin-bottom:6px;">⚠️ Allergie</h2>
+  <p class="text-muted" style="margin-top:-4px;">
+    {{ paziente.cognome }} {{ paziente.nome }} — CF: {{ paziente.codice_fiscale }}
+  </p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <input type="hidden" name="next" value="{{ next|default:'' }}"/>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Categoria</th>
+          <th>Farmaco</th>
+          <th>Sostanza/Alimento</th>
+          <th>Gravità</th>
+          <th>Data</th>
+          <th style="text-align:center;">Attiva</th>
+          <th style="text-align:center;">Elimina</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in formset.forms %}
+          <tr>
+            <td>{{ f.categoria }}</td>
+            <td>{{ f.farmaco }}</td>
+            <td>{{ f.sostanza_libera }}</td>
+            <td>{{ f.gravita }}</td>
+            <td>{{ f.data_rilevazione }}</td>
+            <td style="text-align:center;">{{ f.attiva }}</td>
+            <td style="text-align:center;">{% if f.instance.pk %}{{ f.DELETE }}{% else %}—{% endif %}</td>
+          </tr>
+          <tr>
+            <td colspan="7">{{ f.reazione }} {{ f.note }}</td>
+          </tr>
+          {% for hidden in f.hidden_fields %}{{ hidden }}{% endfor %}
+          {% if f.non_field_errors %}
+            <tr><td colspan="7"><p class="badge danger">{{ f.non_field_errors }}</p></td></tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if formset.non_form_errors %}
+      <p class="badge danger">{{ formset.non_form_errors }}</p>
+    {% endif %}
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+      <a class="btn btn-ghost btn-sm" href="{% url 'paziente_setup' pk=paziente.pk %}">Annulla</a>
+      <button type="submit" class="btn btn-primary btn-sm">Salva</button>
+      <a class="btn btn-secondary btn-sm" href="{% url 'paziente_anagrafica' %}?p={{ paziente.pk }}">Salta</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

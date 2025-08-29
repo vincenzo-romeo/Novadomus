@@ -1,0 +1,204 @@
+/* ================================
+   Diario Turni (light/dark ready)
+   ================================ */
+
+
+/* --- Filtri (griglia) --- */
+
+.diario-turni .grid-filters {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 8px;
+    align-items: end;
+}
+
+
+/* --- Tabella base --- */
+
+.diario-turni table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid rgba(255, 255, 255, .12);
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-turni table {
+        border-color: rgba(0, 0, 0, .12);
+    }
+}
+
+
+/* Celle + intestazioni: righe e colonne */
+
+.diario-turni th,
+.diario-turni td {
+    padding: 8px 10px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+    /* riga */
+    border-right: 1px solid rgba(255, 255, 255, .12);
+    /* colonna */
+    /* angoli arrotondati gradevoli se usi card scure/chiare */
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-turni th,
+    .diario-turni td {
+        border-bottom-color: rgba(0, 0, 0, .12);
+        border-right-color: rgba(0, 0, 0, .12);
+    }
+}
+
+
+/* Bordo sinistro alla prima colonna per chiudere la tabella */
+
+.diario-turni th:first-child,
+.diario-turni td:first-child {
+    border-left: 1px solid rgba(255, 255, 255, .12);
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-turni th:first-child,
+    .diario-turni td:first-child {
+        border-left-color: rgba(0, 0, 0, .12);
+    }
+}
+
+
+/* Bordo destro all’ultima colonna (chiusura) */
+
+.diario-turni th:last-child,
+.diario-turni td:last-child {
+    border-right: 1px solid rgba(255, 255, 255, .12);
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-turni th:last-child,
+    .diario-turni td:last-child {
+        border-right-color: rgba(0, 0, 0, .12);
+    }
+}
+
+
+/* Header sticky */
+
+.diario-turni thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    text-align: center;
+    background: rgba(16, 18, 24, .95);
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-turni thead th {
+        background: rgba(246, 248, 250, .98);
+    }
+}
+
+
+/* Prima colonna sticky (Turno) */
+
+.diario-turni .sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    font-weight: 600;
+    background: rgba(16, 18, 24, .9);
+    backdrop-filter: blur(2px);
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-turni .sticky-col {
+        background: rgba(246, 248, 250, .95);
+    }
+}
+
+
+/* Zebra leggera */
+
+.diario-turni tbody tr:nth-child(even) td {
+    background: rgba(255, 255, 255, .02);
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-turni tbody tr:nth-child(even) td {
+        background: rgba(0, 0, 0, .02);
+    }
+}
+
+
+/* Celle vuote */
+
+.diario-turni .cell-empty {
+    opacity: .6;
+}
+
+
+/* Bottoncini compatti */
+
+.diario-turni .btn-xs {
+    font-size: .78rem;
+    padding: 3px 8px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 6px;
+}
+
+
+/* Spazio tra settimane */
+
+.diario-turni .week-block {
+    margin-bottom: 18px;
+}
+
+
+/* ====== Hard override se il tema globale resetta i bordi (.table) ====== */
+
+.diario-turni table.table {
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+    border: 1px solid rgba(255, 255, 255, .12) !important;
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-turni table.table {
+        border-color: rgba(0, 0, 0, .12) !important;
+    }
+}
+
+.diario-turni table.table th,
+.diario-turni table.table td {
+    border-right: 1px solid rgba(255, 255, 255, .12) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, .12) !important;
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-turni table.table th,
+    .diario-turni table.table td {
+        border-right-color: rgba(0, 0, 0, .12) !important;
+        border-bottom-color: rgba(0, 0, 0, .12) !important;
+    }
+}
+
+.diario-turni table.table th:first-child,
+.diario-turni table.table td:first-child {
+    border-left: 1px solid rgba(255, 255, 255, .12) !important;
+}
+
+.diario-turni table.table th:last-child,
+.diario-turni table.table td:last-child {
+    border-right: 1px solid rgba(255, 255, 255, .12) !important;
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-turni table.table th:first-child,
+    .diario-turni table.table td:first-child,
+    .diario-turni table.table th:last-child,
+    .diario-turni table.table td:last-child {
+        border-color: rgba(0, 0, 0, .12) !important;
+    }
+}

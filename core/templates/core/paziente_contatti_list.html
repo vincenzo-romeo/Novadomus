@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Contatti di emergenza — {{ paziente.cognome }} {{ paziente.nome }}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:980px;margin:auto;">
+  <h2>📞 Contatti di emergenza</h2>
+  <p class="text-muted">{{ paziente.cognome }} {{ paziente.nome }} — CF: {{ paziente.codice_fiscale }}</p>
+
+  <table class="table">
+    <thead>
+      <tr><th>Nome</th><th>Cognome</th><th>Relazione</th><th style="text-align:center;">Primario</th><th style="text-align:center;">Attivo</th><th>Recapiti</th><th style="width:1%"></th></tr>
+    </thead>
+    <tbody>
+      {% for c in contatti %}
+        <tr>
+          <td>{{ c.nome }}</td>
+          <td>{{ c.cognome }}</td>
+          <td>{{ c.get_relazione_display }}</td>
+          <td style="text-align:center;">{% if c.is_primario %}✔{% endif %}</td>
+          <td style="text-align:center;">{% if c.attivo %}✔{% endif %}</td>
+          <td>
+            {% for r in c.recapiti.all %}
+              <div>{{ r.get_tipo_display }}: <strong>{{ r.valore }}</strong>{% if r.preferito %} ★{% endif %}</div>
+            {% empty %}
+              <em>Nessun recapito</em>
+            {% endfor %}
+          </td>
+          <td><a class="btn btn-primary btn-xs" href="{% url 'contatto_modifica' cid=c.pk %}">Modifica</a></td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="7"><em>Nessun contatto inserito.</em></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div style="display:flex;justify-content:flex-end;gap:8px;">
+    <a class="btn btn-ghost btn-sm" href="{% url 'paziente_setup' pk=paziente.pk %}">Indietro</a>
+    <a class="btn btn-secondary btn-sm" href="{% url 'paziente_anagrafica' %}?p={{ paziente.pk }}">Salta</a>
+    <a class="btn btn-primary btn-sm" href="{% url 'contatto_nuovo' pk=paziente.pk %}">➕ Nuovo contatto</a>
+  </div>
+</div>
+{% endblock %}
+

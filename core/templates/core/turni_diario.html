@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Diario Turni — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:1200px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Diario Turni</h2>
+
+  <form method="get" class="stack" style="flex-direction:row;gap:12px;margin-bottom:12px;">
+    <div>
+      <label><strong>Periodo</strong></label>
+      {{ form.periodo }}
+    </div>
+    <div>
+      <label><strong>Dipendente</strong></label>
+      {{ form.dipendente }}
+    </div>
+    <div>
+      <label><strong>Ruolo</strong></label>
+      {{ form.ruolo }}
+    </div>
+    <div>
+      <label><strong>Giorno</strong></label>
+      {{ form.giorno }}
+    </div>
+    <div>
+      <label><strong>Settimana ISO</strong></label>
+      {{ form.settimana_iso }}
+    </div>
+    <div>
+      <label><strong>Cerca</strong></label>
+      {{ form.q }}
+    </div>
+    <div style="align-self:flex-end;">
+      <button type="submit" class="btn btn-ghost btn-xs">Filtra</button>
+      <a class="btn btn-primary btn-xs" href="{% url 'turni_diario' %}">Reset</a>
+    </div>
+  </form>
+
+  {% if periodo %}
+    {% for wk in weeks %}
+      <div style="margin:10px 0 8px; font-size:0.95rem; opacity:0.9;">
+        <strong>Periodo:</strong> {{ periodo }} — Settimana ISO <strong>{{ wk.iso_week }}</strong> — Giorni: {{ wk.dates|length }}
+      </div>
+
+      <table class="table" style="width:100%;border-collapse:collapse;border:1px solid #555;">
+        <thead>
+          <tr>
+            <th style="border:1px solid #555;padding:3px;text-align:left;">Turno / Giorno</th>
+            {% for d in wk.dates %}
+              <th style="border:1px solid #555;padding:3px;text-align:center;">
+                {{ d|date:"D" }}<br>{{ d|date:"d/m/Y" }}
+              </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in wk.table %}
+            <tr>
+              <td style="border:1px solid #555;padding:3px;"><strong>{{ r.row.label }}</strong></td>
+              {% for c in r.cells %}
+                <td style="border:1px solid #555;padding:3px;font-size:0.7em;">
+                  {% if c.items %}
+                    {% for it in c.items %}
+                      <strong>{{ it.cognome }}</strong> {{ it.nome_iniziale }}
+                      <a href="{% url 'admin:core_assegnazioneturno_change' it.id %}" class="btn btn-xs" style="margin-left:3px;">Modifica</a>
+                      {% if it.note %}
+                        <div style="opacity:.8;margin-top:2px;"><em>{{ it.note }}</em></div>
+                      {% endif %}
+                      {% if not forloop.last %}<br>{% endif %}
+                    {% endfor %}
+                  {% else %}
+                    <div style="opacity:.6;">—</div>
+                    <a class="btn btn-ghost btn-xs"
+                       href="{% url 'admin:core_assegnazioneturno_add' %}?periodo={{ periodo.id }}&data={{ c.date|date:'Y-m-d' }}&turno={{ c.turno_id }}{% if form.dipendente.value %}&dipendente={{ form.dipendente.value }}{% endif %}">
+                       + Aggiungi
+                    </a>
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}

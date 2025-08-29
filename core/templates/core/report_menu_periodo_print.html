@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <title>Stampa Menu — {{ periodo }}</title>
+  <style>
+    /* --- Pagina --- */
+    @page { size: A4 landscape; margin: 8mm; }
+    html, body { margin:0; padding:0; background:#fff; }
+
+    /* --- Solo schermo: bottoni --- */
+    .screen-only { display:flex; justify-content:flex-end; gap:8px; padding:8px; }
+    @media print { .screen-only { display:none !important; } }
+
+    /* --- Tabella --- */
+    .report-wrap { padding: 0 4px 8px; }
+    .muted { color:#8a8a8a; font-size:12px; margin:0; }
+    .week-block { page-break-inside: avoid; margin-top:10px; }
+
+    table.menu-table { width:100%; border-collapse:collapse; table-layout:fixed; }
+    .menu-table th, .menu-table td { border:1px solid #cfcfcf; padding:6px 8px; vertical-align:top; }
+    .menu-table thead th { background:#f4f4f4; font-weight:600; text-align:center; }
+    .menu-table tbody th { background:#fafafa; width:105px; }
+    .menu-list { margin:0; padding-left:18px; }
+    .menu-list li { margin:2px 0; }
+    .cell-note { font-style:italic; font-size:11px; color:#666; margin-top:4px; }
+
+    /* Header ripetuto e nessuna riga spezzata */
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; break-inside: avoid; }
+  </style>
+</head>
+<body>
+
+<div class="screen-only">
+  <a class="btn btn-ghost btn-sm" href="{% url 'report_menu_periodo_select' %}">Indietro</a>
+  <button class="btn btn-primary btn-sm" onclick="window.print()">Stampa</button>
+</div>
+
+<div class="report-wrap">
+  <h2 style="margin:0;">Menù del periodo</h2>
+  <p class="muted">{{ periodo }}</p>
+
+  {% for wk in weeks %}
+    <div class="week-block">
+      <h3 style="margin:10px 0 6px 0;">Settimana ISO {{ wk.iso_week }}</h3>
+      <table class="menu-table">
+        <thead>
+          <tr>
+            <th>&nbsp;</th>
+            {% for d in wk.dates %}
+              <th>
+                {% with wd=d|date:"w" %}
+                  {% if wd == '1' %}Lun{% elif wd == '2' %}Mar{% elif wd == '3' %}Mer
+                  {% elif wd == '4' %}Gio{% elif wd == '5' %}Ven{% elif wd == '6' %}Sab{% else %}Dom{% endif %}
+                {% endwith %}
+                <div class="muted">{{ d|date:"d/m" }}</div>
+              </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in wk.table %}
+            <tr>
+              <th>{{ r.row.label }}</th>
+              {% for c in r.cells %}
+                <td>
+                  {% if c.cell %}
+                    <ul class="menu-list">
+                      {% for item in c.cell.items %}
+                        <li>{{ item }}</li>
+                      {% empty %}
+                        <li><span class="muted">—</span></li>
+                      {% endfor %}
+                    </ul>
+                    {% if c.cell.note %}<div class="cell-note">{{ c.cell.note }}</div>{% endif %}
+                  {% else %}
+                    <span class="muted">—</span>
+                  {% endif %}
+                </td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% empty %}
+    <p class="muted">Nessun dato nel periodo selezionato.</p>
+  {% endfor %}
+</div>
+
+</body>
+</html>

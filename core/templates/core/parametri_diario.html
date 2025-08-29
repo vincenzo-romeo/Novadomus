@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Diario Parametri Vitali — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:1200px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Diario Parametri Vitali</h2>
+
+<form method="get" class="stack" style="flex-direction:row;gap:12px;margin-bottom:12px;">
+  <div>
+    <label><strong>Paziente</strong></label>
+    <select name="paziente" class="select">
+      <option value="">Tutti</option>
+      {% for p in pazienti %}
+        <option value="{{ p.id }}" {% if selected_id == p.id|stringformat:"s" %}selected{% endif %}>
+          {{ p.cognome }} {{ p.nome }}
+        </option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label><strong>Giorno</strong></label>
+    <input type="date" name="giorno" value="{{ giorno|date:'Y-m-d' }}" class="input">
+  </div>
+  <div style="align-self:flex-end;display:flex;gap:8px;">
+    <button type="submit" class="btn btn-primary">Filtra</button>
+    {% if not all_mode and paziente %}
+      <a class="btn" href="{% url 'parametro_nuovo' %}?paziente={{ paziente.id }}">+ Nuova rilevazione</a>
+    {% endif %}
+  </div>
+</form>
+
+<table class="table" style="width:100%;border-collapse:collapse;border:1px solid #555;">
+  <thead>
+    <tr>
+      {% if all_mode %}
+        <th style="border:1px solid #555;padding:4px;text-align:left;">Paziente</th>
+      {% endif %}
+      <th style="border:1px solid #555;padding:4px;text-align:left;">Ora</th>
+      <th style="border:1px solid #555;padding:4px;text-align:center;">PA MAX</th>
+      <th style="border:1px solid #555;padding:4px;text-align:center;">PA MIN</th>
+      <th style="border:1px solid #555;padding:4px;text-align:center;">B/m</th>
+      <th style="border:1px solid #555;padding:4px;text-align:center;">O₂</th>
+      <th style="border:1px solid #555;padding:4px;text-align:center;">°C</th>
+      <th style="border:1px solid #555;padding:4px;text-align:center;">Glicemia</th>
+      <th style="border:1px solid #555;padding:4px;text-align:left;">Variazione terapia</th>
+      <th style="border:1px solid #555;padding:4px;text-align:left;">Note</th>
+      <th style="border:1px solid #555;padding:4px;text-align:left;">Operatore</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if rows %}
+      {% for r in rows %}
+        <tr>
+          {% if all_mode %}
+            <td style="border:1px solid #555;padding:4px;">
+              <strong>{{ r.paziente.cognome }} {{ r.paziente.nome }}</strong>
+            </td>
+          {% endif %}
+          <td style="border:1px solid #555;padding:4px;">{{ r.rilevato_il|date:"H:i" }}</td>
+          <td style="border:1px solid #555;padding:4px;text-align:center;">{{ r.pas|default:"" }}</td>
+          <td style="border:1px solid #555;padding:4px;text-align:center;">{{ r.pad|default:"" }}</td>
+          <td style="border:1px solid #555;padding:4px;text-align:center;">{{ r.fc|default:"" }}</td>
+          <td style="border:1px solid #555;padding:4px;text-align:center;">{{ r.spo2|default:"" }}</td>
+          <td style="border:1px solid #555;padding:4px;text-align:center;">{{ r.temp_c|default:"" }}</td>
+          <td style="border:1px solid #555;padding:4px;text-align:center;">{{ r.glicemia_mgdl|default:"" }}</td>
+          <td style="border:1px solid #555;padding:4px;">{{ r.variazione_terapia }}</td>
+          <td style="border:1px solid #555;padding:4px;">{{ r.note }}</td>
+          <td style="border:1px solid #555;padding:4px;">{{ r.operatore|default:"" }}</td>
+        </tr>
+      {% endfor %}
+    {% else %}
+      <tr>
+        <td colspan="{% if all_mode %}11{% else %}10{% endif %}" style="border:1px solid #555;padding:6px;opacity:.7;">
+          Nessuna rilevazione per il giorno selezionato.
+        </td>
+      </tr>
+    {% endif %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

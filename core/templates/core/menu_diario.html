@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Menu — Diario Periodo{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:1200px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Menu — Diario</h2>
+
+  <form method="get" class="stack" style="flex-direction:row;gap:10px;margin-bottom:10px;">
+    <div>
+      <label><strong>Periodo</strong></label>
+      {{ form.periodo }}
+    </div>
+    <div>
+      <label><strong>Pasto</strong></label>
+      {{ form.pasto }}
+    </div>
+    <div>
+      <label><strong>Giorno</strong></label>
+      {{ form.giorno }}
+    </div>
+    <div>
+      <label><strong>Settimana ISO</strong></label>
+      {{ form.settimana_iso }}
+    </div>
+    <div>
+      <label><strong>Cerca</strong></label>
+      {{ form.q }}
+    </div>
+    <div style="align-self:flex-end;">
+      <button type="submit" class="btn btn-primary">Filtra</button>
+      <a class="btn" href="{% url 'menu_diario' %}">Reset</a>
+    </div>
+  </form>
+
+  {% if periodo %}
+    {% for wk in weeks %}
+      <div style="margin:10px 0 8px; font-size:0.8rem; opacity:0.9;">
+        <strong>Periodo:</strong> {{ periodo }} — Settimana ISO <strong>{{ wk.iso_week }}</strong> — Giorni: {{ wk.dates|length }}
+      </div>
+
+      <table class="table" style="width:100%;border-collapse:collapse;border:1px solid #555;">
+        <thead>
+          <tr>
+            <th style="border:1px solid #555;padding:3px;font-size:0.8em;text-align:left;">Pasto / Giorno</th>
+            {% for d in wk.dates %}
+              <th style="border:1px solid #555;padding:3px;font-size:0.8em;text-align:center;">
+                {{ d|date:"D" }}<br>{{ d|date:"d/m/Y" }}
+              </th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in wk.table %}
+            <tr>
+              <td style="border:1px solid #555;padding:6px;"><strong>{{ r.row.label }}</strong></td>
+
+              {% for c in r.cells %}
+                <td style="border:1px solid #555;padding:6px;font-size:0.7em;vertical-align:top;">
+                  {% if c.cell %}
+                    {% if c.cell.items %}
+                      {% for it in c.cell.items %}
+                        • {{ it }}{% if not forloop.last %}<br>{% endif %}
+                      {% endfor %}
+                    {% else %}
+                      <div style="opacity:.7;">(Nessuna voce)</div>
+                    {% endif %}
+                    {% if c.cell.note %}
+                      <div style="opacity:.85;margin-top:4px;"><em>{{ c.cell.note }}</em></div>
+                    {% endif %}
+                    <div style="margin-top:6px;">
+                      <a class="btn btn-xs" href="{% url 'admin:core_menupasto_change' c.cell.id %}">Modifica</a>
+                    </div>
+                  {% else %}
+                    <div style="opacity:.6;">—</div>
+                    <!-- + Aggiungi SOLO se la cella è vuota (nessun MenuPasto esistente) -->
+                    <a class="btn btn-xs"
+                       href="{% url 'admin:core_menupasto_add' %}?periodo={{ periodo.id }}&data={{ c.date|date:'Y-m-d' }}&pasto={{ r.row.code }}">
+                       + Aggiungi
+                    </a>
+                  {% endif %}
+                </td>
+              {% endfor %}
+
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endfor %}
+  {% endif %}
+</div>
+{% endblock %}

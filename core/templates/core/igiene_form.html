@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Nuovo evento igiene — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:720px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Inserisci evento di igiene</h2>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="badge danger" style="display:block;margin-bottom:12px;">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+      <div>
+        <label><strong>{{ form.paziente.label }}</strong></label>
+        {{ form.paziente }} {% for e in form.paziente.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label><strong>{{ form.rilevato_il.label }}</strong></label>
+        {{ form.rilevato_il }} {% for e in form.rilevato_il.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label><strong>{{ form.evento.label }}</strong></label>
+        {{ form.evento }} {% for e in form.evento.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+      <a class="btn" href="{% url 'dashboard' %}">Annulla</a>
+      <button type="submit" class="btn btn-primary">Salva</button>
+    </div>
+  </form>
+</div>
+
+<script src="{% static 'core/js/igiene.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,52 @@
+/* Diario Igiene: tabella leggibile su tema scuro/chiaro */
+
+.diario-igiene table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    table-layout: fixed;
+    /* fissa le larghezze del colgroup */
+}
+
+.diario-igiene th,
+.diario-igiene td {
+    text-align: left;
+    /* allineamento a sinistra */
+    padding: 10px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, .08);
+    /* riga orizzontale leggera */
+    border-right: 1px solid rgba(255, 255, 255, .06);
+    /* colonna leggera */
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-igiene th,
+    .diario-igiene td {
+        border-bottom-color: rgba(0, 0, 0, .08);
+        border-right-color: rgba(0, 0, 0, .06);
+    }
+}
+
+.diario-igiene th:first-child,
+.diario-igiene td:first-child {
+    border-left: 1px solid rgba(255, 255, 255, .06);
+}
+
+@media (prefers-color-scheme: light) {
+    .diario-igiene th:first-child,
+    .diario-igiene td:first-child {
+        border-left-color: rgba(0, 0, 0, .06);
+    }
+}
+
+
+/* celle evento compatte: adatte a "Doccia + Capelli" */
+
+.diario-igiene .event {
+    font-size: .9rem;
+    /* leggermente più piccolo */
+    white-space: nowrap;
+    /* niente a capo */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

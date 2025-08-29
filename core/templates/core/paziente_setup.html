@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Paziente creato — Passi successivi{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:900px;margin:auto;">
+  <h2 style="margin-bottom:6px;">Paziente creato ✅</h2>
+  <p class="text-muted" style="margin-top:-2px;">
+    {{ paziente.cognome }} {{ paziente.nome }} — CF: {{ paziente.codice_fiscale }}
+  </p>
+
+  <div class="grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:16px;">
+    <a class="card" href="{{ url_allergie|default:'#' }}" style="text-decoration:none;opacity:{% if url_allergie %}1{% else %}.5{% endif %};">
+      <h3>⚠️ Aggiungi allergie</h3>
+      <p>Inserisci eventuali allergie alimentari o farmacologiche.</p>
+    </a>
+
+    <a class="card" href="{{ url_contatti|default:'#' }}" style="text-decoration:none;opacity:{% if url_contatti %}1{% else %}.5{% endif %};">
+      <h3>📞 Contatti di emergenza</h3>
+      <p>Registra uno o più contatti utili (opzionale).</p>
+    </a>
+
+	<a class="card" href="{{ url_episodio|default:'#' }}" 
+	   style="text-decoration:none;opacity:{% if url_episodio %}1{% else %}.5{% endif %};">
+	  <h3>🏥 Crea episodio</h3>
+	  <p>Apri la degenza (opzionale). Puoi aggiungere allegati.</p>
+	</a>
+  </div>
+
+  <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+    <a class="btn btn-ghost btn-sm" href="{{ url_dashboard }}">Torna alla dashboard</a>
+    <a class="btn btn-secondary btn-sm" href="{{ url_scheda }}">Salta e vai alla scheda</a>
+  </div>
+</div>
+{% endblock %}

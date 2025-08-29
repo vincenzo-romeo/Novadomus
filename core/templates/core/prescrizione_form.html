@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Nuova prescrizione — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:1100px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Nuova prescrizione farmacologica</h2>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="badge danger" style="display:block;margin-bottom:12px;">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
+      <div>
+        <label><strong>{{ form.paziente.label }}</strong></label>
+        {{ form.paziente }} {% for e in form.paziente.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.medico.label }}</strong></label>
+        {{ form.medico }} {% for e in form.medico.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.data_inizio.label }}</strong></label>
+        {{ form.data_inizio }} {% for e in form.data_inizio.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.data_fine.label }}</strong></label>
+        {{ form.data_fine }} {% for e in form.data_fine.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label style="display:block;"><strong>{{ form.attiva.label }}</strong></label>
+        {{ form.attiva }} {% for e in form.attiva.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div style="grid-column:1/-1;">
+        <label><strong>{{ form.note.label }}</strong></label>
+        {{ form.note }} {% for e in form.note.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <hr style="margin:16px 0;opacity:.3;">
+
+    <h3 style="margin-bottom:8px;">Righe prescrizione</h3>
+    {{ formset.management_form }}
+    <div id="righe-container" class="stack" style="display:flex;flex-direction:column;gap:12px;">
+      {% for f in formset.forms %}
+        <div class="card" data-form-index="{{ forloop.counter0 }}" style="padding:12px;">
+          {% if f.non_field_errors %}<div class="badge danger">{{ f.non_field_errors }}</div>{% endif %}
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+            <div>
+              <label><strong>{{ f.farmaco.label }}</strong></label>
+              {{ f.farmaco }} {% for e in f.farmaco.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+            </div>
+
+            {# --- NUOVO: Forma (readonly) accanto al farmaco --- #}
+            <div>
+              <label><strong>{{ f.farmaco_forma_vis.label }}</strong></label>
+              {{ f.farmaco_forma_vis }}
+            </div>
+
+            <div>
+              <label><strong>{{ f.dose_val.label }}</strong></label>
+              {{ f.dose_val }} {% for e in f.dose_val.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+            </div>
+            <div>
+              <label><strong>{{ f.dose_udm.label }}</strong></label>
+              {{ f.dose_udm }} {% for e in f.dose_udm.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+            </div>
+            <div>
+              <label><strong>{{ f.via.label }}</strong></label>
+              {{ f.via }} {% for e in f.via.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+            </div>
+            <div>
+              <label style="display:block;"><strong>{{ f.prn.label }}</strong></label>
+              {{ f.prn }} {% for e in f.prn.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+            </div>
+            <div style="grid-column:1/-1;">
+              <label><strong>{{ f.note.label }}</strong></label>
+              {{ f.note }} {% for e in f.note.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+            </div>
+
+            <div style="grid-column:1/-1;">
+              <label><strong>{{ f.orari_txt.label }}</strong></label>
+              {{ f.orari_txt }} {% for e in f.orari_txt.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+              <small class="text-muted">Esempio: 08:00,12:00,20:00</small>
+            </div>
+
+            <div style="grid-column:1/-1;">
+              <label><strong>{{ f.giorni.label }}</strong></label>
+              <div class="checks">{{ f.giorni }}</div>
+            </div>
+          </div>
+
+          {% if formset.can_delete %}
+            <div style="margin-top:8px;display:flex;justify-content:flex-end;">
+              <label style="display:flex;align-items:center;gap:6px;">Rimuovi riga {{ f.DELETE }}</label>
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+    {# --- EMPTY FORM per aggiungere nuove righe dinamicamente --- #}
+    <div id="empty-form" data-prefix="{{ formset.prefix }}" style="display:none;">
+      <div class="card" data-form-index="__prefix__" style="padding:12px;">
+        {% with f=formset.empty_form %}
+        {% if f.non_field_errors %}<div class="badge danger">{{ f.non_field_errors }}</div>{% endif %}
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;">
+          <div>
+            <label><strong>{{ f.farmaco.label }}</strong></label>{{ f.farmaco }}
+          </div>
+          <div>
+            <label><strong>{{ f.farmaco_forma_vis.label }}</strong></label>{{ f.farmaco_forma_vis }}
+          </div>
+          <div>
+            <label><strong>{{ f.dose_val.label }}</strong></label>{{ f.dose_val }}
+          </div>
+          <div>
+            <label><strong>{{ f.dose_udm.label }}</strong></label>{{ f.dose_udm }}
+          </div>
+          <div>
+            <label><strong>{{ f.via.label }}</strong></label>{{ f.via }}
+          </div>
+          <div>
+            <label style="display:block;"><strong>{{ f.prn.label }}</strong></label>{{ f.prn }}
+          </div>
+          <div style="grid-column:1/-1;">
+            <label><strong>{{ f.note.label }}</strong></label>{{ f.note }}
+          </div>
+          <div style="grid-column:1/-1;">
+            <label><strong>{{ f.orari_txt.label }}</strong></label>{{ f.orari_txt }}
+            <small class="text-muted">Esempio: 08:00,12:00,20:00</small>
+          </div>
+          <div style="grid-column:1/-1;">
+            <label><strong>{{ f.giorni.label }}</strong></label>
+            <div class="checks">{{ f.giorni }}</div>
+          </div>
+        </div>
+        {% if formset.can_delete %}
+          <div style="margin-top:8px;display:flex;justify-content:flex-end;">
+            <label style="display:flex;align-items:center;gap:6px;">Rimuovi riga {{ f.DELETE }}</label>
+          </div>
+        {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;justify-content:space-between;margin-top:8px;">
+      <button type="button" class="btn" id="add-row">+ Aggiungi altra prescrizione</button>
+      <div>
+        <a class="btn" href="{% url 'dashboard' %}">Annulla</a>
+        <button type="submit" class="btn btn-primary">Salva</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+{# --- PUBBLICA LA MAPPA id_farmaco -> Forma per il JS --- #}
+<script>
+  window.FARMACI_FORMA_CODE = {{ farmaci_forma_code_map|safe }};
+</script>
+
+<script src="{% static 'core/js/prescrizioni.js' %}"></script>
+{% endblock %}

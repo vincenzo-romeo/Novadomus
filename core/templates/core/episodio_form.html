@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Accettazione Paziente — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:920px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Accettazione Paziente</h2>
+
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="badge danger" style="display:block;margin-bottom:12px;">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <!-- GRID PRINCIPALE -->
+    <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+        gap:14px;
+        align-items:start;">
+
+      <!-- Paziente + bottone Nuovo (stessa colonna, sempre allineati) -->
+      <div>
+        <label for="{{ form.paziente.id_for_label }}"><strong>{{ form.paziente.label }}</strong></label>
+        <div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;">
+          <div style="min-width:0">{{ form.paziente }}</div>
+          <a class="btn btn-ghost btn-sm" href="{% url 'paziente_nuovo' %}" title="Crea nuovo paziente">＋</a>
+        </div>
+        {% for error in form.paziente.errors %}<p class="badge danger">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="{{ form.data_inizio.id_for_label }}"><strong>{{ form.data_inizio.label }}</strong></label>
+        <div>{{ form.data_inizio }}</div>
+        <small class="text-muted">Formato: gg/mm/aaaa</small>
+        {% for error in form.data_inizio.errors %}<p class="badge danger">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="{{ form.provenienza.id_for_label }}"><strong>{{ form.provenienza.label }}</strong></label>
+        {{ form.provenienza }}
+        {% for error in form.provenienza.errors %}<p class="badge danger">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="{{ form.medico.id_for_label }}"><strong>{{ form.medico.label }}</strong></label>
+        {{ form.medico }}
+        {% for error in form.medico.errors %}<p class="badge danger">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div>
+        <label for="{{ form.letto.id_for_label }}"><strong>{{ form.letto.label }}</strong></label>
+        {{ form.letto }}
+        <small class="text-muted">Solo letti liberi</small>
+        {% for error in form.letto.errors %}<p class="badge danger">{{ error }}</p>{% endfor %}
+      </div>
+
+      <!-- Motivo a tutta larghezza -->
+      <div style="grid-column:1/-1;">
+        <label for="{{ form.motivo.id_for_label }}"><strong>{{ form.motivo.label }}</strong></label>
+        {{ form.motivo }}
+        {% for error in form.motivo.errors %}<p class="badge danger">{{ error }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <!-- DRAG & DROP ALLEGATI -->
+    <div style="margin-top:16px;">
+      <label for="id_allegati"><strong>{{ form.allegati.label }}</strong></label>
+      <div id="dropzone" class="card" style="padding:20px;text-align:center;border-style:dashed;">
+        <p class="text-muted" style="margin-bottom:8px;">Trascina qui i file oppure</p>
+        <button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('id_allegati').click()">Scegli da file</button>
+        {{ form.allegati }}  <!-- input file multiplo reale -->
+        <div id="filelist" style="margin-top:10px;text-align:left;"></div>
+      </div>
+      {% for error in form.allegati.errors %}<p class="badge danger">{{ error }}</p>{% endfor %}
+    </div>
+
+    <!-- Azioni -->
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+      <a class="btn btn-ghost btn-sm" href="{% url 'dashboard' %}">Annulla</a>
+      <button type="submit" class="btn btn-primary btn-sm">Conferma accettazione</button>
+    </div>
+  </form>
+</div>
+
+<!-- JS ESTERNO (drag&drop + lista file) -->
+<script src="{% static 'core/js/accettazione.js' %}"></script>
+{% endblock %}

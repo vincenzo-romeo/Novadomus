@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "create" %}Nuovo contatto{% else %}Modifica contatto{% endif %} — {{ paziente.cognome }} {{ paziente.nome }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:980px;margin:auto;">
+  <h2>👤 {% if mode == "create" %}Nuovo contatto{% else %}Modifica contatto{% endif %}</h2>
+  <p class="text-muted">{{ paziente.cognome }} {{ paziente.nome }} — CF: {{ paziente.codice_fiscale }}</p>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;">
+      <div><label><strong>Nome</strong></label>{{ form.nome }}</div>
+      <div><label><strong>Cognome</strong></label>{{ form.cognome }}</div>
+      <div><label><strong>Relazione</strong></label>{{ form.relazione }}</div>
+      <div style="grid-column:1/-1;"><label><strong>Note</strong></label>{{ form.note }}</div>
+      <div><label>{{ form.is_primario.label }}</label>{{ form.is_primario }}</div>
+      <div><label>{{ form.attivo.label }}</label>{{ form.attivo }}</div>
+    </div>
+
+    <hr style="margin:16px 0;">
+    <h3>📇 Recapiti</h3>
+    {{ formset.management_form }}
+    <table class="table">
+      <thead>
+        <tr><th>Tipo</th><th>Valore</th><th>Preferito</th><th>Note</th><th>Cancella</th></tr>
+      </thead>
+      <tbody>
+        {% for f in formset.forms %}
+          <tr>
+            <td>{{ f.tipo }}</td>
+            <td>{{ f.valore }}</td>
+            <td style="text-align:center;">{{ f.preferito }}</td>
+            <td>{{ f.note }}</td>
+            <td style="text-align:center;">{% if f.instance.pk %}{{ f.DELETE }}{% else %}—{% endif %}</td>
+          </tr>
+          {% for h in f.hidden_fields %}{{ h }}{% endfor %}
+          {% if f.non_field_errors %}
+            <tr><td colspan="5"><p class="badge danger">{{ f.non_field_errors }}</p></td></tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if form.non_field_errors %}<p class="badge danger">{{ form.non_field_errors }}</p>{% endif %}
+    {% if formset.non_form_errors %}<p class="badge danger">{{ formset.non_form_errors }}</p>{% endif %}
+
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+      <a class="btn btn-ghost btn-sm" href="{% url 'contatti_edit' pk=paziente.pk %}">Annulla</a>
+      <a class="btn btn-secondary btn-sm" href="{% url 'paziente_anagrafica' %}?p={{ paziente.pk }}">Salta</a>
+      <button type="submit" class="btn btn-primary btn-sm">Salva</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

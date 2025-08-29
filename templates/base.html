@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="it" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}RSA Nova Domus{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'core/css/theme.css' %}">
+</head>
+<body>
+  <!-- Barra superiore -->
+  <header class="topbar">
+    <div class="logo">
+      <a href="{% url 'home' %}" class="btn btn-ghost btn-sm" aria-label="Home">
+        🏥 <strong>NOVA DOMUS</strong>
+      </a>
+    </div>
+
+    <nav class="nav" aria-label="Navigazione principale" style="display:flex;gap:8px;align-items:center;">
+      <a class="btn btn-ghost btn-sm" href="{% url 'home' %}">Home</a>
+
+      {% if user.is_authenticated %}
+        <a class="btn btn-ghost btn-sm" href="{% url 'dashboard' %}">Dashboard</a>
+		<a class="btn btn-ghost btn-sm" href="{% url 'admin:index' %}">Amministrazione</a>
+        <span class="text-muted" style="margin-left:4px;">{{ user.first_name|default:user.username }}</span>
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-ghost btn-sm">Logout</button>
+        </form>
+      {% else %}
+        <a class="btn btn-ghost btn-sm" href="{% url 'login' %}">Login</a>
+      {% endif %}
+
+      <button type="button" class="btn btn-ghost btn-sm" onclick="toggleTheme()" aria-label="Cambia tema">🌓</button>
+    </nav>
+  </header>
+	{% if messages %}
+	<div class="alerts alerts-toast" role="status" aria-live="polite">
+	  {% for message in messages %}
+		<div class="alert alert-{{ message.tags }}">{{ message }}</div>
+	  {% endfor %}
+	</div>
+	{% endif %}
+  <!-- Contenuto principale -->
+  <main class="container">
+    {% block content %}
+    <div class="card">
+      <h2>Benvenuto</h2>
+      <p>Questa è la base del gestionale RSA.</p>
+    </div>
+    {% endblock %}
+  </main>
+
+  <script src="{% static 'core/js/theme.js' %}" defer></script>
+	<script>
+	  // Auto-dismiss dopo 2.5s + click per chiudere subito
+	  window.addEventListener('DOMContentLoaded', () => {
+		const alerts = document.querySelectorAll('.alerts-toast .alert');
+		alerts.forEach(el => {
+		  const timer = setTimeout(() => {
+			el.classList.add('fade-out');
+			setTimeout(() => el.remove(), 250);
+		  }, 2500);
+		  el.addEventListener('click', () => {
+			clearTimeout(timer);
+			el.classList.add('fade-out');
+			setTimeout(() => el.remove(), 200);
+		  });
+		});
+	  });
+	</script>
+</body>
+</html>

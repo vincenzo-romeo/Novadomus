@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Nuovo Paziente — RSA{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width:980px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Nuovo Paziente</h2>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="badge danger" style="display:block;margin-bottom:12px;">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+    <!-- ====== Anagrafica base ====== -->
+    <h3>📄 Anagrafica</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;">
+      <div>
+        <label><strong>{{ form.nome.label }}</strong></label>
+        {{ form.nome }} {% for e in form.nome.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.cognome.label }}</strong></label>
+        {{ form.cognome }} {% for e in form.cognome.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.sesso.label }}</strong></label>
+        {{ form.sesso }} {% for e in form.sesso.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.data_nascita.label }}</strong></label>
+        {{ form.data_nascita }}
+        <small class="text-muted">Formato: gg/mm/aaaa</small>
+        {% for e in form.data_nascita.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.codice_fiscale.label }}</strong></label>
+        {{ form.codice_fiscale }} <small class="text-muted">16 caratteri</small>
+        {% for e in form.codice_fiscale.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.tessera_sanitaria.label }}</strong></label>
+        {{ form.tessera_sanitaria }}
+        {% for e in form.tessera_sanitaria.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.telefono.label }}</strong></label>
+        {{ form.telefono }} {% for e in form.telefono.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.email.label }}</strong></label>
+        {{ form.email }} {% for e in form.email.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <!-- ====== Anagrafica estesa ====== -->
+    <h3 style="margin-top:18px;">🏠 Anagrafica estesa</h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;">
+      <div>
+        <label><strong>{{ form.comune_nascita.label }}</strong></label>
+        {{ form.comune_nascita }} {% for e in form.comune_nascita.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.provincia_nascita.label }}</strong></label>
+        {{ form.provincia_nascita }} <small class="text-muted">2 lettere</small>
+        {% for e in form.provincia_nascita.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.comune_residenza.label }}</strong></label>
+        {{ form.comune_residenza }} {% for e in form.comune_residenza.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.provincia_residenza.label }}</strong></label>
+        {{ form.provincia_residenza }} <small class="text-muted">2 lettere</small>
+        {% for e in form.provincia_residenza.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div style="grid-column:1/-1;">
+        <label><strong>{{ form.indirizzo_via.label }}</strong></label>
+        {{ form.indirizzo_via }} {% for e in form.indirizzo_via.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.indirizzo_civico.label }}</strong></label>
+        {{ form.indirizzo_civico }} {% for e in form.indirizzo_civico.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+      <div>
+        <label><strong>{{ form.indirizzo_cap.label }}</strong></label>
+        {{ form.indirizzo_cap }} <small class="text-muted">5 cifre</small>
+        {% for e in form.indirizzo_cap.errors %}<p class="badge danger">{{ e }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <!-- Azioni -->
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px;">
+      <a class="btn btn-ghost btn-sm" href="{% url 'dashboard' %}">Annulla</a>
+      <button type="submit" class="btn btn-primary btn-sm">Salva</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
+

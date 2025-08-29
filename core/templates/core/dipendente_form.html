@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Nuovo Dipendente — RSA{% endblock %}
+{% block content %}
+<div class="card" style="max-width:680px;margin:auto;">
+  <h2 style="margin-bottom:12px;">Nuovo Dipendente</h2>
+  <form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+      <button class="btn btn-secondary" name="save_add" value="1">Salva e inserisci nuovo</button>
+      <button class="btn btn-primary" name="save" value="1">Salva</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
