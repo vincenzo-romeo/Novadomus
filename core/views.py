@@ -972,6 +972,7 @@ class PietanzaCreateView(CreateView):
             messages.success(self.request, "Pietanza salvata. Inseriscine un'altra.")
             return redirect("pietanza_nuova")  # <<< HttpResponseRedirect corretto
         messages.success(self.request, "Pietanza salvata.")
+        return resp
         
 def build_menu_weeks(periodo, pasto_filter=None):
     # intervallo date (tutto il periodo)
