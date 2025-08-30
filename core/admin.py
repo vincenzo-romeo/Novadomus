@@ -88,10 +88,54 @@ class RigaPrescrizioneAdmin(admin.ModelAdmin):
     autocomplete_fields = ("prescrizione", "farmaco")
     inlines = [OrarioDoseInline]
 
-# Registrazione semplice per gli altri modelli
-admin.site.register(Somministrazione)
-admin.site.register(ParametroVitale)
-admin.site.register(Documento)
+@admin.register(Somministrazione)
+class SomministrazioneAdmin(admin.ModelAdmin):
+    list_display = (
+        "paziente",
+        "riga",
+        "programmata_il",
+        "data_ora",
+        "operatore",
+        "dose_erogata",
+        "stato",
+        "note",
+    )
+    list_filter = ("stato", "operatore", "programmata_il")
+    search_fields = ("paziente__cognome", "paziente__nome", "note")
+    ordering = ("-programmata_il",)
+
+@admin.register(ParametroVitale)
+class ParametroVitaleAdmin(admin.ModelAdmin):
+    list_display = (
+        "paziente",
+        "rilevato_il",
+        "pas",
+        "pad",
+        "fc",
+        "spo2",
+        "temp_c",
+        "glicemia_mgdl",
+        "variazione_terapia",
+        "note",
+        "operatore",
+    )
+    list_filter = ("operatore", "rilevato_il")
+    search_fields = ("paziente__cognome", "paziente__nome", "note", "variazione_terapia")
+    ordering = ("-rilevato_il",)
+
+@admin.register(Documento)
+class DocumentoAdmin(admin.ModelAdmin):
+    list_display = (
+        "paziente",
+        "tipo",
+        "file",
+        "tag",
+        "caricato_da",
+    )
+    list_filter = ("tipo", "caricato_da")
+    search_fields = ("paziente__cognome", "paziente__nome", "tag", "file")
+    ordering = ("-paziente",)
+
 
 # ---------- Inline ----------
 class VoceMenuInline(admin.TabularInline):

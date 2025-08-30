@@ -25,6 +25,7 @@ CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
 # Application definition
 
 INSTALLED_APPS = [
+    "jazzmin",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -33,6 +34,61 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'core',
 ]
+
+JAZZMIN_SETTINGS = {
+    "site_title": "NovaDomus Admin",
+    "site_header": "NovaDomus — Gestione",
+    "site_brand": "NovaDomus",
+    "welcome_sign": "Benvenuto nella piattaforma RSA",
+    "copyright": "Nova Domus",
+    "search_model": ["core.Paziente", "core.Farmaco", "core.Somministrazione"],
+
+    # Link rapidi in top menu
+    "topmenu_links": [
+        {"name": "Dashboard", "url": "dashboard", "permissions": ["auth.view_user"]},
+        {"app": "core"},  # mostra tutte le app del progetto
+    ],
+
+    # Icone (FontAwesome)
+    "icons": {
+        "core.Paziente": "fas fa-user-injured",
+        "core.ContattoEmergenza": "fas fa-phone",
+        "core.Allergia": "fas fa-allergies",
+        "core.Prescrizione": "fas fa-notes-medical",
+        "core.Farmaco": "fas fa-pills",
+        "core.Somministrazione": "fas fa-syringe",
+        "core.ParametroVitale": "fas fa-heartbeat",
+        "core.Igiene": "fas fa-soap",
+        "core.DiarioIgiene": "fas fa-soap",
+        "core.Documento": "fas fa-file-medical",
+    },
+
+    # Ordine app/modelli nella sidebar
+    "order_with_respect_to": ["core.Paziente",
+    "core.ContattoEmergenza",
+    "core.Allergia",
+    "core.Farmaco",
+    "core.Prescrizione",
+    "core.Somministrazione",
+    "core.ParametroVitale",
+    "core.DiarioIgiene"],
+    
+    "show_ui_builder": True,  # bottone per cambiare tema live
+}
+
+# Tweaks grafici (tema scuro/chiaro)
+JAZZMIN_UI_TWEAKS = {
+    "theme": "default",  # puoi cambiare: cosmo, flatly, lumen, etc.
+    "dark_mode_theme": "darkly",
+    "navbar": "navbar-dark bg-primary",
+    "no_navbar_border": True,
+    "body_small_text": False,
+    "brand_colour": "navbar-dark bg-primary",
+    "accent": "accent-info",
+    "navbar_fixed": True,
+    "sidebar_fixed": True,
+    "footer_fixed": False,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

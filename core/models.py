@@ -185,7 +185,11 @@ class Farmaco(TracciaMixin):
 
 class Prescrizione(TracciaMixin):
     paziente = models.ForeignKey(Paziente, on_delete=models.CASCADE, related_name="prescrizioni")
-    medico = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name="prescrizioni_medico")
+    medico = models.ForeignKey(
+        User,
+        null=True, blank=True, on_delete=models.SET_NULL, related_name="prescrizioni_medico",
+        limit_choices_to={"groups__name": "Medico"}  # ← mostra solo utenti del gruppo Medico
+    )
     data_inizio = models.DateField()
     data_fine = models.DateField(null=True, blank=True)
     attiva = models.BooleanField(default=True)
