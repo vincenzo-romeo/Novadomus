@@ -537,6 +537,7 @@ class RuoloDipendente(models.TextChoices):
     PUL = "PUL", "Pulizie"
     COORD = "COORD", "Coordinatore"
     AMM = "AMM", "Amministrativo"
+    VOL = "VOL", "Volontario"
     ALTRO = "ALTRO", "Altro"
 
 class Dipendente(TracciaMixin):
@@ -550,8 +551,8 @@ class Dipendente(TracciaMixin):
     class Meta:
         ordering = ["cognome", "nome"]
         indexes = [models.Index(fields=["cognome", "nome"]), models.Index(fields=["attivo", "ruolo"])]
-        verbose_name = "Dipendente"
-        verbose_name_plural = "Dipendenti"
+        verbose_name = "Personale"
+        verbose_name_plural = "Personale"
 
     def __str__(self):
         return f"{self.cognome} {self.nome} ({self.get_ruolo_display()})"
